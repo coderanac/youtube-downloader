@@ -1,8 +1,18 @@
 # Video Downloader
 
-Aplicação web para baixar vídeos do YouTube diretamente pelo navegador. Você cola a URL, escolhe o formato e a qualidade, e o arquivo é baixado para o seu computador.
+Aplicação web para baixar vídeos do YouTube, TikTok e Instagram diretamente pelo navegador. Cole a URL, escolha o formato e a qualidade, e o arquivo é salvo no seu computador.
 
-> **Uso pessoal apenas.** Baixar conteúdo do YouTube pode violar os [Termos de Serviço](https://www.youtube.com/static?template=terms) da plataforma. Use com responsabilidade.
+> **Uso pessoal apenas.** Baixar conteúdo de plataformas pode violar seus Termos de Serviço. Use com responsabilidade.
+
+---
+
+## Plataformas suportadas
+
+| Plataforma  | URLs aceitas |
+|-------------|-------------|
+| YouTube     | `youtube.com`, `youtu.be`, `m.youtube.com` |
+| TikTok      | `tiktok.com`, `vm.tiktok.com`, `vt.tiktok.com` |
+| Instagram   | `instagram.com` (conteúdo público) |
 
 ---
 
@@ -17,12 +27,9 @@ Aplicação web para baixar vídeos do YouTube diretamente pelo navegador. Você
 
 ## Pré-requisitos
 
-Antes de rodar o projeto, instale:
-
 ### Node.js 18+
 
 ```bash
-# Verificar versão instalada
 node -v
 ```
 
@@ -87,17 +94,25 @@ npm start
 
 **1. Cole a URL do vídeo**
 
-No campo de busca, cole o link do YouTube que deseja baixar. Formatos aceitos:
+No campo de busca, cole o link da plataforma desejada. Exemplos:
 
 ```
+# YouTube
 https://www.youtube.com/watch?v=XXXXXXXXXXX
 https://youtu.be/XXXXXXXXXXX
-https://m.youtube.com/watch?v=XXXXXXXXXXX
+
+# TikTok
+https://www.tiktok.com/@usuario/video/XXXXXXXXXXX
+https://vt.tiktok.com/XXXXXXX/
+
+# Instagram
+https://www.instagram.com/reel/XXXXXXXXXXX/
+https://www.instagram.com/p/XXXXXXXXXXX/
 ```
 
 **2. Clique em "Buscar"**
 
-O servidor consulta o `yt-dlp` e retorna as informações do vídeo: título, canal, duração e todos os formatos disponíveis.
+O servidor consulta o `yt-dlp` e retorna as informações do vídeo: título, canal, duração e todos os formatos disponíveis. Caso algo dê errado, a mensagem de erro exata do `yt-dlp` é exibida na tela.
 
 **3. Escolha o formato**
 
@@ -112,7 +127,7 @@ A lista exibe as opções disponíveis com resolução, extensão e tamanho esti
 
 **4. Clique em "Baixar"**
 
-O progresso aparece em tempo real no terminal integrado. Quando terminar, um link **"Salvar arquivo"** aparece para você baixar o arquivo para o seu computador.
+O progresso aparece em tempo real no log integrado. Quando terminar, um link **"Salvar arquivo"** aparece para baixar o arquivo para o seu computador.
 
 > O arquivo é processado na pasta `/tmp` do sistema e deletado automaticamente após o download.
 
@@ -123,6 +138,8 @@ O progresso aparece em tempo real no terminal integrado. Quando terminar, um lin
 ```
 src/
 ├── types.ts                        # Interfaces TypeScript compartilhadas
+├── lib/
+│   └── validate.ts                 # Validação de URLs por plataforma
 ├── app/
 │   ├── layout.tsx                  # Layout raiz (HTML, metadata)
 │   ├── globals.css                 # Variáveis CSS e reset global
@@ -130,9 +147,9 @@ src/
 │   ├── page.tsx                    # Página principal (estado e orquestração)
 │   ├── page.module.css
 │   └── api/
-│       ├── info/route.ts           # POST  /api/info    — busca metadados do vídeo
+│       ├── info/route.ts           # POST  /api/info     — busca metadados do vídeo
 │       ├── download/route.ts       # GET   /api/download — SSE de progresso
-│       └── file/route.ts           # GET   /api/file    — serve e deleta o arquivo
+│       └── file/route.ts           # GET   /api/file     — serve e deleta o arquivo
 └── components/
     ├── SearchForm.tsx              # Formulário de busca
     ├── VideoCard.tsx               # Card com thumbnail e informações
@@ -166,13 +183,21 @@ O `yt-dlp` roda como processo filho do Node.js. Se o navegador fechar ou cancela
 
 ## Solução de problemas
 
-**"Não foi possível obter informações do vídeo"**
-- Verifique se o `yt-dlp` está instalado: `yt-dlp --version`
-- Atualize o yt-dlp: `yt-dlp -U`
-- Vídeos com restrição de idade ou privados não são suportados
+**"yt-dlp não encontrado"**
+- Instale o yt-dlp conforme as instruções em [Pré-requisitos](#pré-requisitos)
+
+**Erro ao buscar vídeo do TikTok ou Instagram**
+- Atualize o yt-dlp para a versão mais recente: `yt-dlp -U`
+- Teste diretamente no terminal para ver o erro completo:
+  ```bash
+  yt-dlp --dump-json "<url>"
+  ```
 
 **Vídeo baixa sem áudio**
-- Alguns formatos contêm apenas vídeo ou apenas áudio. Escolha um formato `.mp4` com resolução + áudio combinados, ou selecione "bestvideo+bestaudio" (padrão quando nenhum formato é escolhido)
+- Alguns formatos contêm apenas vídeo ou apenas áudio. Escolha um formato `.mp4` combinado ou use a opção padrão (melhor qualidade disponível)
+
+**Instagram: "login required"**
+- Perfis privados e Stories exigem autenticação. Apenas conteúdo público é suportado sem login
 
 **Erro de permissão no `/tmp`**
 - Verifique se o usuário tem permissão de escrita em `/tmp`
