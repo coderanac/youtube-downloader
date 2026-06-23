@@ -3,17 +3,9 @@ import { existsSync } from 'fs'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import { NextRequest } from 'next/server'
+import { isValidUrl } from '@/lib/validate'
 
 export const dynamic = 'force-dynamic'
-
-function isValidYoutubeUrl(url: string): boolean {
-  try {
-    const { hostname } = new URL(url)
-    return ['www.youtube.com', 'youtube.com', 'youtu.be', 'm.youtube.com'].includes(hostname)
-  } catch {
-    return false
-  }
-}
 
 function send(controller: ReadableStreamDefaultController, encoder: TextEncoder, data: object) {
   controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`))
@@ -24,7 +16,7 @@ export async function GET(request: NextRequest) {
   const url = searchParams.get('url') ?? ''
   const formatId = searchParams.get('format_id') ?? 'bestvideo+bestaudio/best'
 
-  if (!url || !isValidYoutubeUrl(url)) {
+  if (!url || !isValidUrl(url)) {
     return new Response(JSON.stringify({ error: 'URL inválida.' }), { status: 400 })
   }
 
@@ -44,6 +36,14 @@ export async function GET(request: NextRequest) {
 
       const proc = spawn('yt-dlp', args)
       let filePath = ''
+
+      proc.on('error', (err: NodeJS.ErrnoException) => {
+        const msg = err.code === 'ENOENT'
+          ? 'yt-dlp não encontrado. Instale com: sudo pacman -S yt-dlp'
+          : `Erro ao iniciar yt-dlp: ${err.message}`
+        send(controller, encoder, { error: msg })
+        controller.close()
+      })
 
       request.signal.addEventListener('abort', () => {
         proc.kill('SIGTERM')

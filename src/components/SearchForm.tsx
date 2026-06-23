@@ -20,7 +20,7 @@ export function SearchForm({ onSearch, loading }: SearchFormProps) {
   return (
     <form onSubmit={handleSubmit} className={styles.form} noValidate>
       <label htmlFor="youtube-url" className={styles.label}>
-        URL do YouTube
+        URL do vídeo
       </label>
       <div className={styles.inputGroup} role="group" aria-label="Campo de URL e botão de busca">
         <input
@@ -28,7 +28,7 @@ export function SearchForm({ onSearch, loading }: SearchFormProps) {
           type="url"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          placeholder="https://www.youtube.com/watch?v=..."
+          placeholder="YouTube, TikTok ou Instagram…"
           className={styles.input}
           required
           disabled={loading}

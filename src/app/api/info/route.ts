@@ -1,15 +1,7 @@
 import { spawn } from 'child_process'
 import { NextRequest, NextResponse } from 'next/server'
 import type { VideoFormat } from '@/types'
-
-function isValidYoutubeUrl(url: string): boolean {
-  try {
-    const { hostname } = new URL(url)
-    return ['www.youtube.com', 'youtube.com', 'youtu.be', 'm.youtube.com'].includes(hostname)
-  } catch {
-    return false
-  }
-}
+import { isValidUrl } from '@/lib/validate'
 
 function formatDuration(seconds: number): string {
   const h = Math.floor(seconds / 3600)
@@ -24,8 +16,8 @@ export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => ({}))
   const { url } = body as { url?: string }
 
-  if (!url || !isValidYoutubeUrl(url)) {
-    return NextResponse.json({ error: 'URL do YouTube inválida.' }, { status: 400 })
+  if (!url || !isValidUrl(url)) {
+    return NextResponse.json({ error: 'URL inválida. Suportamos YouTube, TikTok e Instagram.' }, { status: 400 })
   }
 
   return new Promise<NextResponse>((resolve) => {
@@ -36,10 +28,27 @@ export async function POST(request: NextRequest) {
     proc.stdout.on('data', (chunk: Buffer) => { stdout += chunk.toString() })
     proc.stderr.on('data', (chunk: Buffer) => { stderr += chunk.toString() })
 
+    proc.on('error', (err: NodeJS.ErrnoException) => {
+      if (err.code === 'ENOENT') {
+        resolve(NextResponse.json(
+          { error: 'yt-dlp não encontrado. Instale com: sudo pacman -S yt-dlp' },
+          { status: 500 },
+        ))
+      } else {
+        resolve(NextResponse.json({ error: `Erro ao iniciar yt-dlp: ${err.message}` }, { status: 500 }))
+      }
+    })
+
     proc.on('close', (code) => {
       if (code !== 0) {
+        const reason = stderr
+          .split('\n')
+          .filter((l) => l.toLowerCase().includes('error') || l.toLowerCase().includes('unable'))
+          .at(-1)
+          ?.trim()
+
         resolve(NextResponse.json(
-          { error: 'Não foi possível obter informações do vídeo. Verifique a URL.' },
+          { error: reason ?? 'Não foi possível obter informações do vídeo. Verifique a URL.' },
           { status: 500 },
         ))
         return

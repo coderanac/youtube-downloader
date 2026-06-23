@@ -110,9 +110,9 @@ export default function HomePage() {
             <rect width="36" height="36" rx="10" fill="#ff4444" />
             <path d="M14 11l10 7-10 7V11z" fill="white" />
           </svg>
-          <h1 className={styles.title}>YT Downloader</h1>
+          <h1 className={styles.title}>Video Downloader</h1>
         </div>
-        <p className={styles.subtitle}>Cole o link do YouTube e escolha o formato</p>
+        <p className={styles.subtitle}>YouTube · TikTok · Instagram</p>
       </header>
 
       <main className={styles.main}>

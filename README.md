@@ -1,4 +1,4 @@
-# YT Downloader
+# Video Downloader
 
 Aplicação web para baixar vídeos do YouTube diretamente pelo navegador. Você cola a URL, escolhe o formato e a qualidade, e o arquivo é baixado para o seu computador.
 

@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'YT Downloader',
-  description: 'Baixe vídeos do YouTube escolhendo o formato e a qualidade.',
+  title: 'Video Downloader',
+  description: 'Baixe vídeos do YouTube, TikTok e Instagram escolhendo o formato e a qualidade.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
