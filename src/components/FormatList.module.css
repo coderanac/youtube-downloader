@@ -1,0 +1,125 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.heading {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+}
+
+.list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.list::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+.item {
+  display: block;
+}
+
+.formatCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+}
+
+.badge {
+  border-radius: var(--radius-sm);
+  padding: 3px 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: var(--color-border);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.videoBadge {
+  color: var(--color-badge-video);
+}
+
+.audioBadge {
+  color: var(--color-badge-audio);
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+}
+
+.resolution {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.ext {
+  font-weight: 400;
+  color: var(--color-text-muted);
+  margin-left: 4px;
+}
+
+.note {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+.filesize {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.downloadButton {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+  border: 1px solid var(--color-success-border);
+  border-radius: var(--radius-sm);
+  padding: 7px 16px;
+  font-size: 0.83rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: opacity 0.2s, transform 0.1s;
+}
+
+.downloadButton:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+.downloadButton:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.downloadButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
